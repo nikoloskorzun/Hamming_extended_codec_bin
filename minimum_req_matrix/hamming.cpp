@@ -1,10 +1,11 @@
-
 #include "hamming.h"
+
 
 my_size_t Hamming_codec::get_k()
 {
     return this->k;
 }
+
 
 my_size_t pow(my_size_t a, my_size_t n)
 {
@@ -20,7 +21,7 @@ inline bool is_2_power(my_size_t n)
 }
 
 
-
+#if 0
 void Hamming_codec::convert_to_extended_matrix()
 {
     //not using.
@@ -33,9 +34,7 @@ void Hamming_codec::convert_to_extended_matrix()
     this->n++;
     this->parity_check_matrix = temp;
 }
-
-
-
+#endif
 
 
 Bit_matrix Hamming_codec::convert_to_extended(Bit_matrix coded_word)
@@ -62,24 +61,14 @@ void Hamming_codec::print_params()
     std::cout << "generator matrix:\n";
     this->generator_matrix.print();
 #endif // WIN_COMPILE_DEBUG
-
-
-
 }
 Hamming_codec::~Hamming_codec()
 {
 
-
 }
 
 
-
-
-
-
-
-
-Bit_matrix Hamming_codec::code(Bit_matrix word)
+Bit_matrix Hamming_codec::code(Bit_matrix &word)
 {
     Bit_matrix temp;
     if ((word.get_amount_rows() == 1) && (word.get_amount_column() == this->k))
@@ -89,7 +78,9 @@ Bit_matrix Hamming_codec::code(Bit_matrix word)
     return temp;
 
 }
-Bit_matrix Hamming_codec::get_syndrome(Bit_matrix coded_word)
+
+
+Bit_matrix Hamming_codec::get_syndrome(Bit_matrix& coded_word)
 {
 
     Bit_matrix temp;
@@ -98,39 +89,60 @@ Bit_matrix Hamming_codec::get_syndrome(Bit_matrix coded_word)
         Bit_matrix t = this->parity_check_matrix;
         t.transpose();
         temp = coded_word * t;
-
     }
+    
     return temp;
-
-
 }
 
 
-Bit_matrix Hamming_codec::decode(Bit_matrix coded_word)
+my_size_t Hamming_codec::syndrome_to_position(Bit_matrix syndrome)
+{
+    my_size_t syndrome_number = bit_vector_to_number(syndrome);
+    my_size_t temp;
+
+    for (my_size_t i = 0; i < this->n; i++)
+    {
+        Bit_matrix v = this->parity_check_matrix.slice(0, this->m - 1, this->n - i - 1, this->n - i -1 );
+        v.transpose();
+        temp = bit_vector_to_number(v);
+        
+        if (temp == syndrome_number)
+            return this->n - i -1;
+    }
+
+    return 0;
+}
+
+
+Bit_matrix Hamming_codec::decode(Bit_matrix& coded_word)
 {
 
     Bit_matrix syndrome = this->get_syndrome(coded_word);
 
     if (is_zeros_vector(syndrome))
-        return coded_word.slice(0, 0, 0, this->k - 1);
-    my_size_t pos = bit_vector_to_number(syndrome);
+        return coded_word;
 
-    coded_word.reverse_element(0, coded_word.get_amount_column() - 2 - pos);
+    Bit_matrix word(coded_word);
+    my_size_t pos = this->syndrome_to_position(syndrome);
+    word.reverse_element(0, pos);
 
-    return coded_word.slice(0, 0, 0, this->k - 1);
-
-
+    return word;
 }
 
 
-Bit_matrix Hamming_codec::decode_extended(Bit_matrix coded_word)
+Bit_matrix Hamming_codec::get_word(Bit_matrix& coded_word)
+{
+    return coded_word.slice(0, 0, 0, this->k - 1);
+}
+
+
+Bit_matrix Hamming_codec::decode_extended(Bit_matrix& coded_word)
 {
 
     bit check_bit = coded_word.get_element(0, coded_word.get_amount_column() - 1);
 
     Bit_matrix coded_word_without_last_bit = coded_word.slice(0, 0, 0, coded_word.get_amount_column() - 2);
     bit s = xor_sum(coded_word_without_last_bit);
-
 
     Bit_matrix syndrome = this->get_syndrome(coded_word_without_last_bit);
     bool syndrome_zeros = is_zeros_vector(syndrome);
@@ -145,7 +157,7 @@ Bit_matrix Hamming_codec::decode_extended(Bit_matrix coded_word)
 
 #endif
 #endif
-            return coded_word.slice(0, 0, 0, this->k - 1);
+            return coded_word;
         }
         else
         {
@@ -155,17 +167,14 @@ Bit_matrix Hamming_codec::decode_extended(Bit_matrix coded_word)
             std::cout << "Syndrom = ";
             syndrome.print();
 
-
 #endif
 #endif
-
-            return coded_word.slice(0, 0, 0, this->k - 1);
+            return coded_word;
         }
 
     }
     else
     {
-
         if (syndrome_zeros)
         {
 #ifdef WIN_COMPILE_DEBUG
@@ -174,12 +183,11 @@ Bit_matrix Hamming_codec::decode_extended(Bit_matrix coded_word)
             std::cout << "Syndrom = ";
             syndrome.print();
 
-
 #endif
 #endif
-
-            return coded_word.slice(0, 0, 0, this->k - 1);
-
+            Bit_matrix temp(coded_word);
+            temp.reverse_element(0, coded_word.get_amount_column() - 1);
+            return temp;
         }
         else
         {
@@ -188,30 +196,19 @@ Bit_matrix Hamming_codec::decode_extended(Bit_matrix coded_word)
             std::cout << "single error\n";
             std::cout << "Syndrom = ";
             syndrome.print();
-
-
 #endif
 #endif
 
             return this->decode(coded_word_without_last_bit);
         }
-
-
-
     }
-
-
 }
-
-
 
 
 void Hamming_codec::create_B1_matrix()
 {
 
-    Bit_matrix t(this->m, this->k);
-    this->B1_matrix = t;
-
+    this->B1_matrix = Bit_matrix(this->m, this->k);
     this->B1_matrix.set_zero();
 
     my_size_t i;
@@ -231,49 +228,31 @@ void Hamming_codec::create_B1_matrix()
                 i--;
                 temp >>= 1;
             }
-
             j++;
         }
-
     }
-
-
-
-
-
-
 }
 void Hamming_codec::create_generator_matrix()
 {
-    Bit_matrix t(this->k, this->k);
-    this->generator_matrix = t;
+    this->generator_matrix.reset(this->k, this->k);
     this->generator_matrix.reset_to_identity();
 
     Bit_matrix temp(this->B1_matrix);
     temp.transpose();
 
     this->generator_matrix.right_append(temp);
-
-
-
 }
+
 
 void Hamming_codec::create_parity_check_matrix()
 {
-
-
-
-
-
-    Bit_matrix t(this->B1_matrix);
-    this->parity_check_matrix = t;
+    this->parity_check_matrix = Bit_matrix(this->B1_matrix);
 
     Bit_matrix temp(this->m, this->m);
     temp.reset_to_identity();
     this->parity_check_matrix.right_append(temp);
-
-
 }
+
 
 Hamming_codec::Hamming_codec(my_size_t m)
 {
@@ -287,3 +266,4 @@ Hamming_codec::Hamming_codec(my_size_t m)
     this->create_parity_check_matrix();
 
 }
+

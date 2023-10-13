@@ -7,25 +7,32 @@
 
 class Hamming_codec
 {
-
-
 public:
+ 
     Hamming_codec(my_size_t m);
     ~Hamming_codec();
     
+
     my_size_t get_k();
 
 
-    void print_params();
-
-    Bit_matrix code(Bit_matrix word);
-    Bit_matrix decode(Bit_matrix word);
-    Bit_matrix decode_extended(Bit_matrix word);
-    Bit_matrix get_syndrome(Bit_matrix coded_word);
+    Bit_matrix get_syndrome(Bit_matrix &coded_word);
+    Bit_matrix get_word(Bit_matrix& coded_word);
 
 
-    void convert_to_extended_matrix();
+    Bit_matrix code(Bit_matrix &word);
+    Bit_matrix decode(Bit_matrix& word);
+    Bit_matrix decode_extended(Bit_matrix& word);
+
     Bit_matrix convert_to_extended(Bit_matrix word);
+
+
+    void print_params();
+    
+
+#if 0
+    void convert_to_extended_matrix();    
+#endif
 
 private:
     
@@ -39,18 +46,12 @@ private:
     my_size_t k;
     my_size_t r;
 
-
-    
+    my_size_t syndrome_to_position(Bit_matrix syndrome);
 
 
     void create_generator_matrix();
-
     void create_parity_check_matrix();
     void create_B1_matrix();
-
-
-
-
 
 };
 

@@ -3,8 +3,10 @@
 
 #define WIN_COMPILE_DEBUG
 
+#define MEM_COUNTING
 
-#define DEBUG 1
+
+#define DEBUG 3
 
 
 #ifdef WIN_COMPILE_DEBUG
