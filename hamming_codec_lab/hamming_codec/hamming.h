@@ -24,7 +24,7 @@ public:
     Bit_matrix decode(Bit_matrix& word);
     Bit_matrix decode_extended(Bit_matrix& word);
 
-    Bit_matrix convert_to_extended(Bit_matrix word);
+    Bit_matrix convert_to_extended(Bit_matrix& word);
 
 
     void print_params();
@@ -46,7 +46,7 @@ private:
     my_size_t k;
     my_size_t r;
 
-    my_size_t syndrome_to_position(Bit_matrix syndrome);
+    my_size_t syndrome_to_position(Bit_matrix& syndrome);
 
 
     void create_generator_matrix();

@@ -37,7 +37,7 @@ void Hamming_codec::convert_to_extended_matrix()
 #endif
 
 
-Bit_matrix Hamming_codec::convert_to_extended(Bit_matrix coded_word)
+Bit_matrix Hamming_codec::convert_to_extended(Bit_matrix& coded_word)
 {
     Bit_matrix temp(coded_word);
     if (coded_word.get_amount_rows() == 1)
@@ -95,7 +95,7 @@ Bit_matrix Hamming_codec::get_syndrome(Bit_matrix& coded_word)
 }
 
 
-my_size_t Hamming_codec::syndrome_to_position(Bit_matrix syndrome)
+my_size_t Hamming_codec::syndrome_to_position(Bit_matrix& syndrome)
 {
     my_size_t syndrome_number = bit_vector_to_number(syndrome);
     my_size_t temp;

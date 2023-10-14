@@ -28,7 +28,6 @@ Bit_matrix App::noise(Bit_matrix& v, my_size_t error_count, my_size_t* errors=NU
 bit get_rand()
 {
     return rand() % 2;
-
 }
 
 

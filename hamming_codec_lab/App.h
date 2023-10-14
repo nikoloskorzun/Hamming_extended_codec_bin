@@ -4,8 +4,8 @@
 
 #include <iostream>
 
-#include "hamming.h"
-#include "mat.h"
+#include "hamming_codec/hamming.h"
+#include "hamming_codec/mat.h"
 
 
 
