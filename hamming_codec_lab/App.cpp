@@ -89,9 +89,6 @@ void App::run()
 
     res_extended.print();
     this->print_pointer(errors[0]);
-    std::cout << "syndrome\n";
-
-    //codec.get_syndrome(res_extended.slice(0,0,0,res_extended.get_amount_column() - 2)).print();
     Bit_matrix ans = codec.decode_extended(res_extended);
     std::cout << "decoded word extended \n";
     ans.print();

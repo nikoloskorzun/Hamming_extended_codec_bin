@@ -3,13 +3,6 @@
 
 #include "init.h"
 
-#ifndef WIN_COMPILE_DEBUG
-typedef unsigned char uint8_t;
-#endif
-
-typedef size_t my_size_t;
-typedef uint8_t byte;
-typedef uint8_t bit;
 
 
 class Bit_matrix
@@ -80,8 +73,7 @@ private:
 
     my_size_t amount_rows;
     my_size_t amount_column;
-    my_size_t size_allocated_memory;
-
+    inline my_size_t get_size_allocated_memory();
     inline byte bit_mask(my_size_t bit_pos);
 
     //memory functions

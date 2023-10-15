@@ -40,7 +40,7 @@ Bit_matrix::Bit_matrix(Bit_matrix* other)
     this->amount_column = other->amount_column;
     this->matrix = this->allocate_bits(this->amount_rows, this->amount_column);
 
-    for (my_size_t i = 0; i < this->size_allocated_memory; i++)
+    for (my_size_t i = 0; i < this->get_size_allocated_memory(); i++)
     {
         this->matrix[i] = other->matrix[i];
     }
@@ -53,7 +53,7 @@ Bit_matrix::Bit_matrix(const Bit_matrix& other)
     this->amount_column = other.amount_column;
     this->matrix = this->allocate_bits(this->amount_rows, this->amount_column);
 
-    for (my_size_t i = 0; i < this->size_allocated_memory; i++)
+    for (my_size_t i = 0; i < this->get_size_allocated_memory(); i++)
     {
         this->matrix[i] = other.matrix[i];
     }
@@ -106,15 +106,14 @@ BEGIN
 
 void Bit_matrix::set_zero()
 {
-    for (my_size_t i = 0; i < this->size_allocated_memory; i++)
+    for (my_size_t i = 0; i < this->get_size_allocated_memory(); i++)
         this->matrix[i] = (byte)0;
-
 }
 
 
 void Bit_matrix::set_ones()
 {
-    for (my_size_t i = 0; i < this->size_allocated_memory; i++)
+    for (my_size_t i = 0; i < this->get_size_allocated_memory(); i++)
         this->matrix[i] = (byte)255;
 }
 
@@ -135,10 +134,9 @@ bit Bit_matrix::get_element(my_size_t i, my_size_t j)
 {
 
     my_size_t bit_pos = i * this->amount_column + j;
-
     my_size_t byte_pos = bit_pos / 8;
-
     bit_pos %= 8;
+
     if (this->matrix[byte_pos] & this->bit_mask(bit_pos))
         return 1;
     return 0;
@@ -148,9 +146,7 @@ bit Bit_matrix::get_element(my_size_t i, my_size_t j)
 void Bit_matrix::set_element(my_size_t i, my_size_t j, bit value)
 {
     my_size_t bit_pos = i * this->amount_column + j;
-
     my_size_t byte_pos = bit_pos / 8;
-
     bit_pos %= 8;
 
     if (value)
@@ -166,6 +162,13 @@ void Bit_matrix::reverse_element(my_size_t i, my_size_t j)
     bit el = this->get_element(i, j);
     this->set_element(i, j, !el);
 }
+
+
+inline my_size_t Bit_matrix::get_size_allocated_memory()
+{
+    return (1 + (this->amount_column * this->amount_rows - 1) / 8);
+} 
+
 
 
 /*
@@ -185,23 +188,21 @@ BEGIN
 
 byte* Bit_matrix::allocate_bits(my_size_t m, my_size_t n)
 {
-    this->size_allocated_memory = 1 + (m * n - 1) / 8;
-
 #ifdef WIN_COMPILE_DEBUG
 #if DEBUG > 1
 
 #ifdef MEM_COUNTING
 
 
-    this->mem_used += this->size_allocated_memory;
+    this->mem_used += this->get_size_allocated_memory();
     std::cout << "Memory used " << this->mem_used << " bytes\n";
 
 #endif
 #endif
 #endif // WIN_COMPILE_DEBUG
 
-    byte* temp_pointer = new byte[this->size_allocated_memory];
-    temp_pointer[this->size_allocated_memory - 1] = 0;
+    byte* temp_pointer = new byte[this->get_size_allocated_memory()];
+    temp_pointer[this->get_size_allocated_memory() - 1] = 0;
 
     return temp_pointer;
 }
@@ -209,17 +210,19 @@ byte* Bit_matrix::allocate_bits(my_size_t m, my_size_t n)
 
 void Bit_matrix::free_bits(void* mem)
 {
-    delete[] mem;
+
 #ifdef WIN_COMPILE_DEBUG
 #if DEBUG > 1
 
 #ifdef MEM_COUNTING
 
-    this->mem_used -= this->size_allocated_memory;
+    this->mem_used -= this->get_size_allocated_memory();
     std::cout << "Memory used " << this->mem_used << " bytes\n";
 #endif
 #endif
 #endif // WIN_COMPILE_DEBUG
+
+    delete[] mem;
 }
 
 
@@ -313,7 +316,6 @@ Bit_matrix get_zeros_vector(my_size_t n)
     Bit_matrix temp(1, n);
     temp.set_zero();
     return temp;
-
 }
 
 
@@ -333,7 +335,6 @@ bool is_zeros_vector(Bit_matrix& v)
             return false;
     }
     return true;
-
 }
 
 
@@ -345,7 +346,6 @@ bit xor_sum(Bit_matrix& m)
         sum ^= m.get_element(0, i);
     }
     return sum;
-
 }
 
 
@@ -526,6 +526,7 @@ Bit_matrix& Bit_matrix::operator=(const Bit_matrix& matrix)
     {
         return *this;
     }
+
     if (this == nullptr)
     {
         this->amount_rows = matrix.amount_rows;
@@ -541,10 +542,11 @@ Bit_matrix& Bit_matrix::operator=(const Bit_matrix& matrix)
         this->matrix = this->allocate_bits(this->amount_rows, this->amount_column);
     }
 
-    for (my_size_t i = 0; i < this->size_allocated_memory; i++)
+    for (my_size_t i = 0; i < this->get_size_allocated_memory(); i++)
     {
         this->matrix[i] = matrix.matrix[i];
     }
+
     return *this;
 }
 
@@ -575,6 +577,7 @@ Bit_matrix Bit_matrix::slice(my_size_t i_start, my_size_t i_end, my_size_t j_sta
 
 void Bit_matrix::print()
 {
+#ifdef MATRIX_PRINTING
     for (my_size_t i = 0; i < this->amount_rows; i++)
     {
         for (my_size_t j = 0; j < this->amount_column; j++)
@@ -587,6 +590,8 @@ void Bit_matrix::print()
         std::cout << "\n";
 #endif //WIN_COMPILE_DEBUG
     }
+
+#endif
 }
 
 
@@ -594,6 +599,4 @@ inline byte Bit_matrix::bit_mask(my_size_t bit_pos)
 {
     return (1 << (7 - bit_pos));
 }
-
-
 

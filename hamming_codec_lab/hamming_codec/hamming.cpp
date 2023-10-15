@@ -98,15 +98,13 @@ Bit_matrix Hamming_codec::get_syndrome(Bit_matrix& coded_word)
 my_size_t Hamming_codec::syndrome_to_position(Bit_matrix& syndrome)
 {
     my_size_t syndrome_number = bit_vector_to_number(syndrome);
-    my_size_t temp;
 
     for (my_size_t i = 0; i < this->n; i++)
     {
         Bit_matrix v = this->parity_check_matrix.slice(0, this->m - 1, this->n - i - 1, this->n - i -1 );
         v.transpose();
-        temp = bit_vector_to_number(v);
         
-        if (temp == syndrome_number)
+        if (v == syndrome)
             return this->n - i -1;
     }
 
