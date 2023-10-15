@@ -2,11 +2,11 @@
 #define INIT_H
 
 #define WIN_COMPILE_DEBUG
+ 
+//#define MEM_COUNTING
 
-#define MEM_COUNTING
 
-
-#define DEBUG 3
+#define DEBUG 4
 
 
 #ifdef WIN_COMPILE_DEBUG
