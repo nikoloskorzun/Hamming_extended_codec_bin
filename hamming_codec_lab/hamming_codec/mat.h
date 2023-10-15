@@ -82,13 +82,19 @@ private:
 
 };
 
-
+#ifdef WIN_APP
 Bit_matrix get_random_vector(my_size_t len, bit(*get_rand)());
 Bit_matrix get_zeros_vector(my_size_t n);
-bool is_zeros_vector(Bit_matrix& v);
 Bit_matrix get_ones_vector(my_size_t n);
-bit xor_sum(Bit_matrix& m);
+    bit xor_sum(Bit_matrix& m);
+
+#endif // 
+bool is_zeros_vector(Bit_matrix& v);
+
 my_size_t bit_vector_to_number(Bit_matrix& vector);
+#ifdef HAMMING_CODER_OPTIMIZATION
+Bit_matrix number_to_bit_vector(my_size_t number, my_size_t size);
+#endif
 Bit_matrix operator* (Bit_matrix& left, Bit_matrix& right);
 
 #endif // !MAT_H

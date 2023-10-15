@@ -21,6 +21,24 @@ inline bool is_2_power(my_size_t n)
 }
 
 
+#ifdef HAMMING_CODER_OPTIMIZATION
+
+void Hamming_codec::generate_dict()
+{
+    my_size_t t = pow(2, this->k);
+    this->dict = new Bit_matrix[t];
+
+    for (my_size_t i = 0; i < t; i++)
+    {
+        Bit_matrix t = number_to_bit_vector(i, this->k);
+        this->dict[i] = this->code(t, false);
+    }
+
+
+
+}
+#endif // HAMMING_CODER_OPTIMIZATION
+
 #if 0
 void Hamming_codec::convert_to_extended_matrix()
 {
@@ -36,7 +54,7 @@ void Hamming_codec::convert_to_extended_matrix()
 }
 #endif
 
-
+#ifdef HAMMING_EXTENDED_ON
 Bit_matrix Hamming_codec::convert_to_extended(Bit_matrix& coded_word)
 {
     Bit_matrix temp(coded_word);
@@ -47,7 +65,7 @@ Bit_matrix Hamming_codec::convert_to_extended(Bit_matrix& coded_word)
     }
     return temp;
 }
-
+#endif
 
 void Hamming_codec::print_params()
 {
@@ -64,12 +82,28 @@ void Hamming_codec::print_params()
 }
 Hamming_codec::~Hamming_codec()
 {
+#ifdef HAMMING_CODER_OPTIMIZATION
+
+    delete[] this->dict;
+
+#endif // HAMMING_CODER_OPTIMIZATION
 
 }
 
+#ifdef HAMMING_CODER_OPTIMIZATION
 
-Bit_matrix Hamming_codec::code(Bit_matrix &word)
+Bit_matrix Hamming_codec::code(Bit_matrix& word, bool fast_code)
+#else
+Bit_matrix Hamming_codec::code(Bit_matrix& word)
+
+#endif
 {
+#ifdef HAMMING_CODER_OPTIMIZATION
+    if(fast_code)
+        return this->dict[bit_vector_to_number(word)];
+#endif
+
+
     Bit_matrix temp;
     if ((word.get_amount_rows() == 1) && (word.get_amount_column() == this->k))
     {
@@ -133,7 +167,7 @@ Bit_matrix Hamming_codec::get_word(Bit_matrix& coded_word)
     return coded_word.slice(0, 0, 0, this->k - 1);
 }
 
-
+#ifdef HAMMING_EXTENDED_ON
 Bit_matrix Hamming_codec::decode_extended(Bit_matrix& coded_word)
 {
 
@@ -202,7 +236,7 @@ Bit_matrix Hamming_codec::decode_extended(Bit_matrix& coded_word)
     }
 }
 
-
+#endif
 void Hamming_codec::create_B1_matrix()
 {
 
@@ -262,6 +296,14 @@ Hamming_codec::Hamming_codec(my_size_t m)
     this->create_B1_matrix();
     this->create_generator_matrix();
     this->create_parity_check_matrix();
+
+#ifdef HAMMING_CODER_OPTIMIZATION
+
+    this->generate_dict();
+
+#endif // HAMMING_CODER_OPTIMIZATION
+
+
 
 }
 

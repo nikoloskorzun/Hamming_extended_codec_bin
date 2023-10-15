@@ -310,6 +310,34 @@ my_size_t bit_vector_to_number(Bit_matrix& vector)
     return (a);
 }
 
+Bit_matrix number_to_bit_vector(my_size_t number, my_size_t size)
+{
+    Bit_matrix v(1, size); 
+    v.set_zero();
+    my_size_t temp = number;
+    my_size_t l = 0;
+
+    while (temp)
+    {
+        l++;
+        temp >>= 1;
+    }
+
+    if (!l)
+        l = 1;
+    
+    for(my_size_t i = 1; i <= l; i++)
+    {
+        v.set_element(0, size-i, (number & 1));
+        number >>= 1;
+    }
+    v.set_element(0, 0, (number & 1));
+
+    return v;
+
+}
+
+
 
 Bit_matrix get_zeros_vector(my_size_t n)
 {
@@ -319,12 +347,12 @@ Bit_matrix get_zeros_vector(my_size_t n)
 }
 
 
-Bit_matrix get_ones_vector(my_size_t n)
+/*Bit_matrix get_ones_vector(my_size_t n)
 {
     Bit_matrix temp(1, n);
     temp.set_ones();
     return temp;
-}
+}*/
 
 
 bool is_zeros_vector(Bit_matrix& v)
