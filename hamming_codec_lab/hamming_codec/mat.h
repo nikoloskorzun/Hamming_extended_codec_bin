@@ -86,10 +86,10 @@ private:
 Bit_matrix get_random_vector(my_size_t len, bit(*get_rand)());
 Bit_matrix get_zeros_vector(my_size_t n);
 Bit_matrix get_ones_vector(my_size_t n);
-    bit xor_sum(Bit_matrix& m);
 
 #endif // 
 bool is_zeros_vector(Bit_matrix& v);
+bit xor_sum(Bit_matrix& m);
 
 my_size_t bit_vector_to_number(Bit_matrix& vector);
 #ifdef HAMMING_CODER_OPTIMIZATION
