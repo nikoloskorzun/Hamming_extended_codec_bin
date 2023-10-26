@@ -26,13 +26,12 @@ its use many memory.
 	typedef size_t my_size_t;
 
 #else
-	typedef size_t my_size_t;
 	typedef unsigned char uint8_t;
 #endif
 
 
 #ifdef ARDUINO_COMPILE_OPT
-	typedef uint16_t my_size_t;
+	typedef unsigned my_size_t;
 #endif
 
 

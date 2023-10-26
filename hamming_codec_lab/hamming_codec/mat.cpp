@@ -338,22 +338,24 @@ Bit_matrix number_to_bit_vector(my_size_t number, my_size_t size)
 }
 
 
-
+#ifdef WIN_APP
 Bit_matrix get_zeros_vector(my_size_t n)
 {
     Bit_matrix temp(1, n);
     temp.set_zero();
     return temp;
 }
+#endif
 
 
-/*Bit_matrix get_ones_vector(my_size_t n)
+#ifdef WIN_APP
+Bit_matrix get_ones_vector(my_size_t n)
 {
     Bit_matrix temp(1, n);
     temp.set_ones();
     return temp;
-}*/
-
+}
+#endif
 
 bool is_zeros_vector(Bit_matrix& v)
 {
@@ -376,7 +378,7 @@ bit xor_sum(Bit_matrix& m)
     return sum;
 }
 
-
+#ifdef WIN_APP
 Bit_matrix get_random_vector(my_size_t len, bit(*get_rand)())
 {
     Bit_matrix v(1, len);
@@ -388,7 +390,7 @@ Bit_matrix get_random_vector(my_size_t len, bit(*get_rand)())
 
     return v;
 }
-
+#endif
 
 /*
 Help functions

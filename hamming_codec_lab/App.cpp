@@ -54,7 +54,7 @@ void App::print_pointer(my_size_t pos)
 void App::run()
 {
     srand(time(0));
-    my_size_t r = 4, l;
+    my_size_t r = 6, l;
 
 
     Hamming_codec codec(r);
